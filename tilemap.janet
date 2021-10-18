@@ -9,8 +9,8 @@
 
 (defn toggle-point [tilemap x y] 
   (if (get-in tilemap [:state [x y]])
-    (do (pp "CLEAR!") (clear-point tilemap x y))
-    (do (pp "SET!") (set-point tilemap x y))))
+    (do (clear-point tilemap x y))
+    (do (set-point tilemap x y))))
 
 
 (defn dir-test [bitmap]
@@ -41,7 +41,7 @@
 (defn place-mouse [{:size [mx my] :center [cx cy]} x y] 
   [(+ (* mx (math/trunc (/ x mx))) cx) (+ (* my (math/trunc (/ y mx))) cy) mx my])
 
-(defn render-tilemap [tilemap]
+(defn draw-tilemap [tilemap]
   (def tileset (tilemap :tileset))
   (def bit-map (tileset :bitmap))
   (def grid (tileset :grid))
@@ -67,7 +67,7 @@
     :state initial-state
     :set-point set-point 
     :clear-point clear-point
-    :render render-tilemap
+    :draw draw-tilemap
     :click click-tilemap
     })
 
