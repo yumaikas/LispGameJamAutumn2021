@@ -8,4 +8,8 @@
 
 (defn clamp [val lower upper] (max (min val upper) lower))
 
+(defn distance [a b] (math/sqrt (+ ;(map |(math/pow (- $1 $0) 2) a b))))
+
+
+
 

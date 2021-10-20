@@ -29,8 +29,9 @@
   [;(map * coord size) ;size])
 
 (defn draw-named-tile 
-  [tmap tile-name dest &opt rotation]  
+  [tmap tile-name dest &opt rotation add-color]  
   (default rotation 0.0)
+  (default add-color [0 0 0])
   (def tile-coord (get-in tmap [:named tile-name :coords]))
   (def base-color (get-in tmap [:named tile-name :color]))
   (def base-rotation (get-in tmap [:named tile-name :rotation]))
@@ -39,7 +40,7 @@
     (tmap :tex)
     (pick-tile tile-coord (tmap :tile-size))
      dest 
-    (tmap :center) (+ rotation base-rotation) base-color))
+    (tmap :center) (+ rotation base-rotation) (map + base-color add-color)))
 
 (defn draw-cursor 
   [tmap tile-name dest]  

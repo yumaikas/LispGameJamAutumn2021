@@ -6,25 +6,20 @@
 
 
 (defn run-game [assets] 
-
+  (math/seedrandom (os/time))
+  (def player (init-player assets 20 20))
   (def tileset (assets :tileset))
   (def tilemap 
     (init-tilemap 
-      tileset 
-      @{
-        [0 0] true
-        [0 1] true
-        [1 0] true
-        [1 1] true
-        [2 1] true
-        [2 2] true
-        [2 3] true
-        [2 4] true
-        [2 5] true
-        [3 5] true
-        [4 5] true
-        }))
-  (def player (init-player assets 20 20))
+      tileset (table ;(seq [x :in (range 0 37)
+                           y :in (range 0 24)
+                           phase :in [:key :value]] 
+                        (match phase
+                          :key [x y]
+                          :value (or (> 0.24 (math/random)) nil))))))
+  (:set-point tilemap 0 0)
+  (:light-point tilemap 0 0)
+
   (def cursor (assets :cursor))
 
   # (def grid (assets :cell-grid))
@@ -34,23 +29,30 @@
     (def dt (- t1 t))
     (set t t1)
 
-    (def [mx my] (j/get-mouse-position))
+    (def mpos (j/get-mouse-position))
+    (def [mx my] mpos)
+    (def dist (distance (player :position) mpos))
+
     (when (j/mouse-button-pressed? :left)
-      (:click tilemap mx my))
-    (:update player dt)
+      # The tilemap needs to know if it's going to delete
+      # from under the player or not
+      (:click tilemap player mx my))
+    (:update player dt tilemap)
 
     (j/begin-drawing)
     (j/clear-background [0 0 0])
-    (:draw tilemap)
+    (:draw tilemap mpos (< dist 100))
     (:draw player)
     (:draw cursor mx my)
-
+    (j/draw-text 
+      (string (:unlit-remain tilemap) " Unlit rails remain")
+      5 (- 800 32) 32 [1 1 1])
+    #(j/draw-fps 0 0)
     (j/end-drawing))
-
   (j/close-window))
 
 (defn main [& args]
-  (j/init-window 1200 800 "Seaweed Salad")
+  (j/init-window 1200 800 "Spark works")
   (j/set-target-fps 60)
   (j/hide-cursor)
   (def assets (load-assets)) 
