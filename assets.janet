@@ -129,7 +129,7 @@
 (defn load-assets [] 
   (def center [15 15])
   (def tile-size [17 17])
-  (def core-tex (j/load-texture `Assets\\monochrome_transparent.png`))
+  (def core-tex (j/load-texture `Assets/monochrome_transparent.png`))
   (def tmap 
     { 
      :tile-size tile-size 
@@ -157,6 +157,6 @@
   {:tileset tmap 
    :player-run-cycle player-run-cycle
    :player-stand-cycle player-stand-cycle
-   :cursor { :draw (fn [_ x y] (draw-cursor tmap :mouse [x y ;tile-size])) }
+   :cursor { :draw (fn [_ x y] (draw-cursor tmap :mouse [x y ;(map |(* 2 $) tile-size)])) }
    })
 
