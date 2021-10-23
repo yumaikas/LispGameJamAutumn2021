@@ -4,6 +4,7 @@
 (import jaylib :as j)
 (import ./menu)
 (import ./level1)
+(import ./credits)
 
 (defn start-game [state switch]
   (switch (level1/init (state :assets))))
@@ -13,7 +14,7 @@
   (os/exit 0))
 
 (defn show-credits [state switch]
-  nil)
+  (switch (credits/init (state :assets))))
 
 
 (defn init [assets]

@@ -50,7 +50,6 @@
 
   (def unlit-remain (:unlit-remain tilemap))
   (def restart-available (= 0 unlit-remain))
-  (pp unlit-remain)
 
   (when (not restart-available)
     (:draw tilemap mpos (>= 100 dist))
@@ -59,7 +58,6 @@
                  5 (- 800 32) 32 [1 1 1]))
   
   (when restart-available
-    (pp ".....")
     (:draw restart-menu))
   (:draw cursor mx my)
   (def paused (pause-menu :shown))
