@@ -67,8 +67,8 @@
 (defn init [assets] 
   (def tilemap 
     (init-tilemap 
-      (assets :tileset) (table ;(seq [x :in (range 0 5) # 37
-                           y :in (range 0 5) # 24
+      (assets :tileset) (table ;(seq [x :in (range 0 37) # 37
+                           y :in (range 0 24) # 24
                            phase :in [:key :value]] 
                         (match phase
                           :key [x y]
