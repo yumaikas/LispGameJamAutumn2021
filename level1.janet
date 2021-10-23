@@ -51,11 +51,10 @@
   (def unlit-remain (:unlit-remain tilemap))
   (def restart-available (= 0 unlit-remain))
 
-  (when (not restart-available)
     (:draw tilemap mpos (>= 100 dist))
     (:draw player)
-    (j/draw-text (string (:unlit-remain tilemap) " Unlit rails remain")
-                 5 (- 800 32) 32 [1 1 1]))
+    (j/draw-text (string (:unlit-remain tilemap) " sparks remain")
+                 5 (- 800 32) 32 [1 1 1])
   
   (when restart-available
     (:draw restart-menu))
@@ -67,12 +66,16 @@
 (defn init [assets] 
   (def tilemap 
     (init-tilemap 
-      (assets :tileset) (table ;(seq [x :in (range 0 37) # 37
-                           y :in (range 0 24) # 24
-                           phase :in [:key :value]] 
-                        (match phase
-                          :key [x y]
-                          :value (or (> 0.24 (math/random)) nil))))))
+      (assets :tileset) @{}))
+
+  (loop [x :in (range 0 37) # 37
+         y :in (range 0 24) # 24
+         :when (> 0.24 (math/random))]
+    (:set-point tilemap x y)
+    (:lock-point tilemap x y)
+    (when (> 0.1 (math/random))
+      (:key-point tilemap x y)))
+
   (:set-point tilemap 0 0)
   (:light-point tilemap 0 0)
 
@@ -94,7 +97,7 @@
        (button/init "Play again!" [80 160] 80 [1 1 1]
                     (fn [menu switch] (switch (init assets))))
        (button/init "Go to Menu" [80 240] 80 [1 1 1]
-                    (fn [menu switch] (switch (start-menu/init assets))))])) 
+                    (fn [menu switch] (switch (start-menu/init assets))))]))
 
 
   {:state

@@ -18,6 +18,7 @@
    :mouse { :coords [ 38 10 ] :rotation 0.0 :color [0.2 0.4 1]}
    :lock-box { :coords [ 0 10 ] :rotation 0.0 :color [1 1 0]}
    :blocked { :coords [ 40 14 ] :rotation 0.0 :color [1 0 0]}
+   :spark { :coords [6 0] :rotation 0.0 :color [1 1 0]}
    }) 
 
 (def bitmap [ 
@@ -126,12 +127,14 @@
     }
   )
 
-
+(def text.png (slurp `Assets/monochrome_transparent.png`))
 
 (defn load-assets [] 
   (def center [15 15])
   (def tile-size [17 17])
-  (def core-tex (j/load-texture `Assets/monochrome_transparent.png`))
+  (spit "tex.png" text.png)
+  (def core-tex (j/load-texture `tex.png`))
+  (os/rm "tex.png")
   (def tmap 
     { 
      :tile-size tile-size 

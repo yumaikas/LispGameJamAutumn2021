@@ -9,7 +9,6 @@
 (var- state nil)
 
 (defn switch-state [new-state] 
-  (debug/stacktrace (fiber/current))
   (set state new-state))
 
 (defn run-game [assets] 

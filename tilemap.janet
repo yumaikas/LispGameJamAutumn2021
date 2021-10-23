@@ -18,6 +18,11 @@
 (defn- dark? [[_ _ light]] (not light))
 (defn- light? [[_ _ light]] light)
 
+(defn- lit-key? [tilemap x y] 
+  (and
+    (get-in tilemap [:key-map [x y]])
+    (light? (or (get-in tilemap [:state [x y]]) [0 0 false]))))
+
 (defn- dark-around-point [tilemap x y]
   (seq [[dx dy bit] :in dirs
         :let [px (+ x dx) py (+ y dy)
@@ -40,18 +45,17 @@
       (+= bitmap bit))
   bitmap)
 
-
 (defn- light-point [tilemap x y]
   (def [_ bitmap _] (get-in tilemap [:state [x y]]))
   (put-in tilemap [:state [x y]] [true bitmap true])
   (each [dx dy] (dark-around-point tilemap x y)
     (light-point tilemap dx dy)))
 
-
 (defn- set-point [tilemap x y]
   (def bitmap (bitmap-point tilemap x y))
   (def light (get-in tilemap [:state [x y] 2]))
   (put-in tilemap [:state [x y]] [true bitmap (or light false)])
+
   (each [px py] (set-around-point tilemap x y)
     (def bitmap (bitmap-point tilemap px py))
     (def light (get-in tilemap [:state [px py] 2]))
@@ -60,6 +64,9 @@
 
 (defn- lock-point [tilemap x y] 
   (put-in tilemap [:locked-tiles [x y]] true))
+
+(defn- set-target-tile [tilemap x y]
+  (put-in tilemap [:key-map [x y]] true))
 
 (defn- clear-point [tilemap x y]
   (put-in tilemap [:state [x y]] nil)
@@ -97,14 +104,22 @@
 (defn draw-tilemap [tilemap [mx my] should-draw-cursor]
   (def tileset (tilemap :tileset))
   (def bit-map (tileset :bitmap))
+  (def key-map (tilemap :key-map))
   (def grid (tileset :grid))
 
+  (def max-y (max ;(map 1 (keys (tilemap :state)))))
   (each [[x y] [state bitmap lit]] (pairs (tilemap :state))
     (when state
+      (def keyed (get key-map [x y]))
       (def name (bit-map bitmap ))
-      (if lit
-        (:draw-named-tile tileset name (place-tile grid x y) 0 [0.1 0.3 0.1])
-        (:draw-named-tile tileset name (place-tile grid x y)))))
+      (def blueness (/ y max-y))
+      (def redness (/ (- max-y y) max-y))
+      (cond
+        lit (:draw-named-tile tileset name (place-tile grid x y) 0 [0.1 0.3 (+ (* 0.6 blueness) 0.1)])
+        :else (:draw-named-tile tileset name (place-tile grid x y) 0 [(* 0.7 redness) 0 0] ))
+      (when (and (not lit) keyed)
+        (:draw-named-tile tileset :spark (place-tile grid x y) 0 [0 0 0]))
+      ))
 
   (when should-draw-cursor
     (def cursor (place-mouse grid mx my))
@@ -115,11 +130,12 @@
       (:draw-named-tile tileset :lock-box cursor))
     (when (<= 2 (length (light-around-point tilemap tx ty)))
       (:draw-named-tile tileset :blocked cursor))
-
     ))
 
 (defn unlit-remain [tilemap]
-  (length (filter dark? (values (tilemap :state)))))
+  (-
+   (length (keys (tilemap :key-map)))
+   (length (filter |(lit-key? tilemap ;$) (keys (tilemap :state))))))
 
 (defn click-tilemap [tilemap player mx my] 
   (def [sx sy] (get-in tilemap [:tileset :grid :size]))
@@ -152,11 +168,14 @@
     :tileset tileset
     :state @{}
     :locked-tiles @{}
+    :key-map @{}
     :light-point light-point
     :set-point set-point 
+    :lock-point lock-point
     :unlit-remain unlit-remain
     :clear-point clear-point
     :test-coord test-coord
+    :key-point set-target-tile
     :draw draw-tilemap
     :click click-tilemap
     })
