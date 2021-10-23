@@ -1,7 +1,6 @@
 (import jaylib :as j)
 
 (defn- hover-rect 
-  
   [
    {:text text
     :coord [x y]
@@ -11,7 +10,7 @@
   (def text-width (j/measure-text text h))
   [x y (+ text-width 10) h])
 
-(defn- update-menu-entry [entry dt [mx my] switch]
+(defn- update-menu-entry [entry menu dt [mx my] switch]
   (def 
     {:text text
     :coord [x y]
@@ -21,7 +20,7 @@
   (put entry :hovered hovered)
   (def clicked (and (j/mouse-button-pressed? :left) hovered))
   (when clicked
-    ((entry :on-click) switch)))
+    ((entry :on-click) menu switch)))
 
 (defn- draw-menu-entry [entry] 
   (def 

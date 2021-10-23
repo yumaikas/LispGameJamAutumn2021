@@ -16,6 +16,8 @@
    :surround { :coords [3 5] :rotation 270.0 :color [0 0.4 0] }
    :cursor { :coords [ 39 14 ] :rotation 0.0 :color [1 0 0 ]}
    :mouse { :coords [ 38 10 ] :rotation 0.0 :color [0.2 0.4 1]}
+   :lock-box { :coords [ 0 10 ] :rotation 0.0 :color [1 1 0]}
+   :blocked { :coords [ 40 14 ] :rotation 0.0 :color [1 0 0]}
    }) 
 
 (def bitmap [ 
@@ -143,7 +145,7 @@
   (def player-run-cycle 
     (init-animation 
       (* 0.125 3)
-      [ (frame (* 1 0.125) core-tex (pick-tile [19 9] tile-size) 0 :yellow)
+      [(frame (* 1 0.125) core-tex (pick-tile [19 9] tile-size) 0 :yellow)
        (frame (* 2 0.125) core-tex (pick-tile [20 9] tile-size) 0 :yellow)
        (frame (* 3 0.125) core-tex (pick-tile [18 9] tile-size) 0 :yellow) ]))
 
@@ -154,7 +156,7 @@
        (frame (* 2 0.5) core-tex (pick-tile [18 9] tile-size) 2 :yellow)
        ]))
 
-  {:tileset tmap 
+  @{:tileset tmap 
    :player-run-cycle player-run-cycle
    :player-stand-cycle player-stand-cycle
    :cursor { :draw (fn [_ x y] (draw-cursor tmap :mouse [x y ;(map |(* 2 $) tile-size)])) }

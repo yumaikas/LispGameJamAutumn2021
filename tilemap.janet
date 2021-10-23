@@ -8,11 +8,13 @@
             [0 1 2r0100] #south
             [-1 0 2r1000] #west
             ])
+
 (defn- set-around-point [tilemap x y]
   (seq [[dx dy bit] :in dirs
         :let [px (+ x dx) py (+ y dy)]
         :when (get-in tilemap [:state [px py]]) ]
     [px py bit]))
+
 (defn- dark? [[_ _ light]] (not light))
 (defn- light? [[_ _ light]] light)
 
@@ -56,6 +58,9 @@
     (put-in tilemap [:state [px py]] [true bitmap light]))
   tilemap)
 
+(defn- lock-point [tilemap x y] 
+  (put-in tilemap [:locked-tiles [x y]] true))
+
 (defn- clear-point [tilemap x y]
   (put-in tilemap [:state [x y]] nil)
   (each [px py] (set-around-point tilemap x y)
@@ -85,6 +90,10 @@
 (defn place-mouse [{:size [mx my] :center [cx cy]} x y] 
   [(+ (* mx (math/trunc (/ x mx))) cx) (+ (* my (math/trunc (/ y mx))) cy) mx my])
 
+(defn pixel->tile [{:size [mx my] :center [cx cy]} x y]
+  [(math/trunc (/ x mx)) (math/trunc (/ y my))])
+
+
 (defn draw-tilemap [tilemap [mx my] should-draw-cursor]
   (def tileset (tilemap :tileset))
   (def bit-map (tileset :bitmap))
@@ -95,11 +104,19 @@
       (def name (bit-map bitmap ))
       (if lit
         (:draw-named-tile tileset name (place-tile grid x y) 0 [0.1 0.3 0.1])
-        (:draw-named-tile tileset name (place-tile grid x y)))
-    ))
+        (:draw-named-tile tileset name (place-tile grid x y)))))
+
   (when should-draw-cursor
     (def cursor (place-mouse grid mx my))
-    (:draw-named-tile tileset :cursor cursor)))
+    (:draw-named-tile tileset :cursor cursor)
+
+    (def [tx ty] (pixel->tile grid mx my))
+    (when (get-in tilemap [:locked-tiles [tx ty]])
+      (:draw-named-tile tileset :lock-box cursor))
+    (when (<= 2 (length (light-around-point tilemap tx ty)))
+      (:draw-named-tile tileset :blocked cursor))
+
+    ))
 
 (defn unlit-remain [tilemap]
   (length (filter dark? (values (tilemap :state)))))
@@ -107,6 +124,8 @@
 (defn click-tilemap [tilemap player mx my] 
   (def [sx sy] (get-in tilemap [:tileset :grid :size]))
   (def [x y] [(math/trunc (/ mx sx)) (math/trunc (/ my sy))])
+  (when (get-in tilemap [:locked-tiles [x y]])
+    (break))
   (def lights (light-around-point tilemap x y))
   (def destroy?  (not (not (get-in tilemap [:state [x y]]))))
   (def create? (not destroy?))
@@ -125,13 +144,14 @@
 (defn test-coord [tilemap tx ty]
   (def [sx sy] (get-in tilemap [:tileset :grid :size]))
   (def [x y] [(math/trunc (/ tx sx)) (math/trunc (/ ty sy))])
-  (when-let [state (get-in tilemap [:state [x y]]) ]
+  (when-let [state (get-in tilemap [:state [x y]])]
     state))
 
 (defn init-tilemap [tileset initial-state] 
   (def tmap @{
     :tileset tileset
     :state @{}
+    :locked-tiles @{}
     :light-point light-point
     :set-point set-point 
     :unlit-remain unlit-remain
@@ -141,7 +161,8 @@
     :click click-tilemap
     })
   (each pt (keys initial-state)
-    (set-point tmap ;pt))
+    (set-point tmap ;pt)
+    (lock-point tmap ;pt))
   tmap)
 
 (comment @[:none #surround
