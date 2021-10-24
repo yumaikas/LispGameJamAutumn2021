@@ -138,6 +138,7 @@
    (length (filter |(lit-key? tilemap ;$) (keys (tilemap :state))))))
 
 (defn click-tilemap [tilemap player mx my] 
+  (def thump-sound (tilemap :thump-sound))
   (def [sx sy] (get-in tilemap [:tileset :grid :size]))
   (def [x y] [(math/trunc (/ mx sx)) (math/trunc (/ my sy))])
   (when (get-in tilemap [:locked-tiles [x y]])
@@ -153,6 +154,7 @@
           (and destroy? in-radius (not under-player))
           (and create? in-radius under-player) 
           (and create? in-radius has-room))
+    (j/play-sound thump-sound)
     (toggle-point tilemap x y)
     (when (and create? (> (length lights) 0))
       (light-point tilemap x y))))
@@ -163,7 +165,7 @@
   (when-let [state (get-in tilemap [:state [x y]])]
     state))
 
-(defn init-tilemap [tileset initial-state] 
+(defn init-tilemap [assets tileset initial-state] 
   (def tmap @{
     :tileset tileset
     :state @{}
@@ -177,6 +179,7 @@
     :test-coord test-coord
     :key-point set-target-tile
     :draw draw-tilemap
+    :thump-sound (assets :thump-sound)
     :click click-tilemap
     })
   (each pt (keys initial-state)

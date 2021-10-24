@@ -20,6 +20,7 @@
   (put entry :hovered hovered)
   (def clicked (and (j/mouse-button-pressed? :left) hovered))
   (when clicked
+    (j/play-sound (entry :click-sound))
     ((entry :on-click) menu switch)))
 
 (defn- draw-menu-entry [entry] 
@@ -35,10 +36,12 @@
     (j/draw-rectangle-lines ;(hover-rect entry) color)))
 
 (defn init [text coord size color on-click]
+  (def assets (dyn :assets))
   @{:text text
     :coord coord
     :size size
     :color color
+    :click-sound (assets :click-sound)
     :hovered false
     :update update-menu-entry
     :draw draw-menu-entry

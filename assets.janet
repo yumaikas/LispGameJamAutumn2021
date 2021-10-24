@@ -128,6 +128,7 @@
   )
 
 (def text.png (slurp `Assets/monochrome_transparent.png`))
+(def click-audio (slurp `Assets/Clic07.mp3.flac`))
 
 (defn load-assets [] 
   (def center [15 15])
@@ -135,6 +136,12 @@
   (spit "tex.png" text.png)
   (def core-tex (j/load-texture `tex.png`))
   (os/rm "tex.png")
+  (def click-audio (j/load-sound `Assets/Clic07.wav`))
+  (def level1-music (j/load-music-stream `Assets/del_erad.ogg`))
+  (def thump-sound (j/load-sound `Assets/thwack-03.wav`))
+  (j/set-sound-volume thump-sound 0.2)
+  (j/set-music-volume level1-music 0.2)
+
   (def tmap 
     { 
      :tile-size tile-size 
@@ -162,6 +169,9 @@
   @{:tileset tmap 
    :player-run-cycle player-run-cycle
    :player-stand-cycle player-stand-cycle
+   :click-sound click-audio
+   :thump-sound thump-sound
+   :level1-music level1-music
    :cursor { :draw (fn [_ x y] (draw-cursor tmap :mouse [x y ;(map |(* 2 $) tile-size)])) }
    })
 

@@ -13,9 +13,20 @@
     {:state 
      {:player player 
       :pause-menu pause-menu
+      :start-music start-music
+      :level-music level-music
       :restart-menu restart-menu
       :tilemap tilemap}}
     state)
+  
+  (when start-music
+    (pp "HIIT")
+    (put-in state [:state :start-music] false)
+    (pp level-music)
+    (setdyn :music level-music)
+    (j/play-music-stream level-music)
+    (j/set-music-volume level-music 1))
+  (j/update-music-stream level-music)
 
   (def mpos (j/get-mouse-position))
   (def [mx my] mpos)
@@ -55,17 +66,18 @@
     (:draw player)
     (j/draw-text (string (:unlit-remain tilemap) " sparks remain")
                  5 (- 800 32) 32 [1 1 1])
+    (j/draw-text  `Song: "Janne Hanhisuanto for Radakan"` 400 (- 800 32) 32 [1 1 1])
   
   (when restart-available
     (:draw restart-menu))
   (:draw cursor mx my)
   (def paused (pause-menu :shown))
-  (when paused (:draw pause-menu))
-  )
+  (when paused (:draw pause-menu)))
 
 (defn init [assets] 
   (def tilemap 
     (init-tilemap 
+      assets
       (assets :tileset) @{}))
 
   (loop [x :in (range 0 37) # 37
@@ -99,11 +111,12 @@
        (button/init "Go to Menu" [80 240] 80 [1 1 1]
                     (fn [menu switch] (switch (start-menu/init assets))))]))
 
-
   {:state
    @{:player (init-player assets 20 20)
      :cursor cursor
      :pause-menu pause-menu
+     :start-music true
+     :level-music (assets :level1-music)
      :restart-menu  restart-menu
      :tilemap tilemap }
    :update update-level
