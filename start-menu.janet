@@ -5,6 +5,7 @@
 (import ./menu)
 (import ./level1)
 (import ./credits)
+(import ./tutorial)
 
 (defn start-game [state switch]
   (switch (level1/init (state :assets))))
@@ -15,6 +16,8 @@
 (defn show-credits [state switch]
   (switch (credits/init (state :assets))))
 
+(defn show-tutorial [state switch]
+  (switch (tutorial/init (state :assets))))
 
 (defn init [assets]
   (var ytrack 80)
@@ -30,6 +33,9 @@
 
        (button/init "Credits" [xtrack (+= ytrack 90)] 80 [1 1 1] 
                     (fn [me switch] (show-credits state switch)))
+
+       (button/init "Tutorial" [xtrack (+= ytrack 90)] 80 [1 1 1] 
+                    (fn [me switch] (show-tutorial state switch)))
 
        (button/init "Exit" [xtrack (+= ytrack 90)] 80 [1 1 1] 
                     (fn [me switch] (exit-game))) ] 
