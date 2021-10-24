@@ -10,14 +10,13 @@
 
 (defn switch-state [new-state] 
   (when-let [music (dyn :music)]
-    (j/stop-music-stream music))
+    (j/pause-music-stream music))
   (set state new-state))
 
 (defn run-game [assets] 
   (put assets :start-menu/init start-menu/init)
   (put assets :level1/init level1/init)
   (setdyn :assets assets)
-
   (set state (start-menu/init assets))
   (math/seedrandom (os/time))
   (while (not (j/window-should-close))
@@ -28,6 +27,7 @@
   (j/close-window))
 
 (defn main [& args]
+  (j/set-trace-log-level :error)
   (j/init-window 1200 800 "Spark works")
   (j/init-audio-device)
   (j/set-target-fps 60)

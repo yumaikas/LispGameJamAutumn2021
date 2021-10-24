@@ -2,6 +2,7 @@
 (use ./assets)
 (use ./tilemap)
 (use ./player)
+(import ./attributions :as credits)
 
 (import jaylib :as j)
 # (import ./pause-menu)
@@ -20,9 +21,7 @@
     state)
   
   (when start-music
-    (pp "HIIT")
     (put-in state [:state :start-music] false)
-    (pp level-music)
     (setdyn :music level-music)
     (j/play-music-stream level-music)
     (j/set-music-volume level-music 1))
@@ -66,7 +65,7 @@
     (:draw player)
     (j/draw-text (string (:unlit-remain tilemap) " sparks remain")
                  5 (- 800 32) 32 [1 1 1])
-    (j/draw-text  `Song: "Janne Hanhisuanto for Radakan"` 400 (- 800 32) 32 [1 1 1])
+    (j/draw-text (credits/get :music) 400 (- 800 32) 32 [1 1 1])
   
   (when restart-available
     (:draw restart-menu))

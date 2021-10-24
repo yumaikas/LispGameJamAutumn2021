@@ -1,5 +1,6 @@
 (import jaylib :as j)
 (use ./utils)
+(import ./attributions :as credits)
 
 (def tiles 
   {
@@ -127,18 +128,34 @@
     }
   )
 
-(def text.png (slurp `Assets/monochrome_transparent.png`))
-(def click-audio (slurp `Assets/Clic07.mp3.flac`))
+# Kenney
+(credits/add :kenny-tex "Textures by Kenny.nl")
+(def- text.png (slurp `Assets/monochrome_transparent.png`))
+
+# No credits for this, as far as I can tell?
+(def- click-audio (slurp `Assets/Clic07.wav`))
+(credits/add :music `Song: "Janne Hanhisuanto for Radakan"`)
+(def- music-data (slurp `Assets/del_erad.ogg`))
+(credits/add :thump-sound "Thump sound created by Jordan Irwin (AntumDeluge)")
+(def- thump-sound (slurp `Assets/thwack-03.wav`))
+
+(defn spitball [data ext func]
+  (def temp-path (string "temp." ext))
+  (spit temp-path data)
+  (def return-value (func temp-path))
+  (os/rm temp-path)
+  return-value)
 
 (defn load-assets [] 
   (def center [15 15])
   (def tile-size [17 17])
-  (spit "tex.png" text.png)
-  (def core-tex (j/load-texture `tex.png`))
-  (os/rm "tex.png")
-  (def click-audio (j/load-sound `Assets/Clic07.wav`))
-  (def level1-music (j/load-music-stream `Assets/del_erad.ogg`))
-  (def thump-sound (j/load-sound `Assets/thwack-03.wav`))
+
+  (def core-tex (spitball text.png "png" j/load-texture))
+  (def click-audio (spitball click-audio "wav" j/load-sound))
+  (def thump-sound (spitball thump-sound "wav" j/load-sound))
+  (spit "music1.ogg" music-data)
+  (def level1-music (j/load-music-stream "music1.ogg"))
+
   (j/set-sound-volume thump-sound 0.2)
   (j/set-music-volume level1-music 0.2)
 
