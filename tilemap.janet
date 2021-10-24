@@ -51,6 +51,12 @@
   (each [dx dy] (dark-around-point tilemap x y)
     (light-point tilemap dx dy)))
 
+(defn- dark-point [tilemap x y]
+  (when (= [0 0] [x y])
+    (break))
+  (def [_ bitmap _] (get-in tilemap [:state [x y]]))
+  (put-in tilemap [:state [x y]] [true bitmap false]))
+
 (defn- set-point [tilemap x y]
   (def bitmap (bitmap-point tilemap x y))
   (def light (get-in tilemap [:state [x y] 2]))
@@ -156,6 +162,11 @@
           (and create? in-radius has-room))
     (j/play-sound thump-sound)
     (toggle-point tilemap x y)
+    (when destroy? 
+      (each [lx ly] lights
+        (when (= 0 (length (light-around-point tilemap lx ly)))
+          (dark-point tilemap lx ly))))
+
     (when (and create? (> (length lights) 0))
       (light-point tilemap x y))))
 

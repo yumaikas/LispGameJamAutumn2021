@@ -6,12 +6,14 @@
 (import ./level1)
 (import ./credits)
 (import ./tutorial)
+(import ./assets)
 
 (defn start-game [state switch]
   (switch (level1/init (state :assets))))
 
 (defn exit-game [&]
-  (j/close-window))
+  (j/close-window)
+  (assets/cleanup-assets))
 
 (defn show-credits [state switch]
   (switch (credits/init (state :assets))))

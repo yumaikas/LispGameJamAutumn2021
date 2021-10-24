@@ -147,6 +147,8 @@
   return-value)
 
 (defn cleanup-assets [] 
+  (def assets (dyn :assets))
+  (j/unload-music-stream (assets :level1-music))
   (os/rm "music1.ogg"))
 
 (defn load-assets [] 
