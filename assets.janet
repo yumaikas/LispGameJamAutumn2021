@@ -146,6 +146,9 @@
   (os/rm temp-path)
   return-value)
 
+(defn cleanup-assets [] 
+  (os/rm "music1.ogg"))
+
 (defn load-assets [] 
   (def center [15 15])
   (def tile-size [17 17])

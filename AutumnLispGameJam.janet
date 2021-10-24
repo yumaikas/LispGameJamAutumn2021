@@ -24,7 +24,8 @@
     (j/begin-drawing)
     (:draw state)
     (j/end-drawing))
-  (j/close-window))
+  (j/close-window)
+  (cleanup-assets))
 
 (defn main [& args]
   (j/set-trace-log-level :error)

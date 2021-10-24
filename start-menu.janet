@@ -10,8 +10,7 @@
   (switch (level1/init (state :assets))))
 
 (defn exit-game [&]
-  (j/close-window)
-  (os/exit 0))
+  (j/close-window))
 
 (defn show-credits [state switch]
   (switch (credits/init (state :assets))))
