@@ -58,7 +58,7 @@
   (def pos [(- x  8) (- y 16) ;(map * [sx sy] [34 34])])
   #(j/draw-circle nx ny 100 [1 0 0 0.5])
 
-  # Draw wre the sensors are going to be
+  # Draw were the sensors are going to be
   ## (j/draw-circle (+ nx 8) ny 4 [0 1 1])
   ## (j/draw-circle nx (- ny 8) 4 [0 1 1])
   ## (j/draw-circle nx (+ ny 8) 4 [0 1 1])
