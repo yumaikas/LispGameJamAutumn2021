@@ -56,6 +56,10 @@ I have a file called attributions.janet, so that I could add attributions for as
 
 I wasn't able to get a web-build completed, which was disappointing, but a web build of Janet + Jaylib looks to be a fairly fiddly challenge. Not impossible, but likely involving tradeoffs around native libraries.
 
+## Missing Jaylib functionality
+
+Jaylib was notably missing bindings for functions that allowed creation of assets from memory buffers, and it also was missing a lot of the collision functions that Raylib has.
+
 ## Finishing
 
 - "Finishing" meant something specific to me, and might be part of why some parts of the game were underbaked? Finishing, to me, means:
